@@ -1,0 +1,10 @@
+{
+    "de": {
+        "aws_region": "eu-west-1",
+        "django_settings": "pydocman.settings",
+        "profile_name": "default",
+        "project_name": "pydocman",
+        "runtime": "python3.6",
+        "s3_bucket": "incendier-storage"
+    }
+}

@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://github.hubspot.com/odometer/themes/odometer-theme-plaza.css" />
+    <link rel="stylesheet" href="https://github.hubspot.com/odometer/themes/odometer-theme-default.css" />
+    <script src="https://github.hubspot.com/odometer/odometer.js"></script>
+
+    <script>
+        var time = 0;
+        function recalculate() {
+            var value = 0;
+            $.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/',
+                function (data) {
+                    value += parseFloat(data[0]['price_usd']) * 985;
+                    $.get('https://api.coinmarketcap.com/v1/ticker/iota/',
+                        function (data) {
+                            value += parseFloat(data[0]['price_usd']) * 622.223;
+                            $.get('https://api.coinmarketcap.com/v1/ticker/icon/',
+                                function (data) {
+                                    value += parseFloat(data[0]['price_usd']) * 260.47;
+                                    $('#portfolio').html(Math.round(value * 100) / 100);
+                                    var date = new Date();
+                                    $('#updated_time').html("0");
+                                    time = 0;
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+        var el = document.querySelector('#portfolio');
+        setInterval(function () { time += 1; $('#updated_time').html(time); }, 1000);
+        recalculate();
+        setInterval(recalculate, 60000);
+    </script>
+</head>
+
+<body style="align-content: center;text-align:center;">
+    <div id="portfolio" class="odometer" style="font-size:17vw;">0</div>
+</body>
+
+</html>
