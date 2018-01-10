@@ -83,12 +83,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pydocman.wsgi.application'
 
-ENV = 'live'
 S3_BUCKET = 'incendier-storage'
 
 try:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-
+    ENV = os.environ['ENV_NAME']
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
