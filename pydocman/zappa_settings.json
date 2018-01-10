@@ -1,10 +1,24 @@
 {
-    "de": {
+    "demo": {
         "aws_region": "eu-west-1",
         "django_settings": "pydocman.settings",
         "profile_name": "default",
         "project_name": "pydocman",
         "runtime": "python3.6",
-        "s3_bucket": "incendier-storage"
+        "s3_bucket": "incendier-storage",
+        "aws_environmental_variables": {"ENV_NAME": "demo"},
+        "manage_roles": false,
+        "role_arn": "arn:aws:iam::320792901640:role/pydocman-demo-ZappaLambdaExecutionRole"
+    },
+    "live": {
+        "aws_region": "eu-west-1",
+        "django_settings": "pydocman.settings",
+        "profile_name": "default",
+        "project_name": "pydocman",
+        "runtime": "python3.6",
+        "s3_bucket": "incendier-storage",
+        "aws_environmental_variables": {"ENV_NAME": "live"},
+        "manage_roles": false,
+        "role_arn": "arn:aws:iam::320792901640:role/pydocman-live-ZappaLambdaExecutionRole"
     }
 }
