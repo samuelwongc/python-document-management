@@ -123,8 +123,8 @@ API hosted using AWS Lambda, DB hosted on AWS RDS, continuous deployment via Cir
 ```
 ## Deployment
 Setup up environmental variables on AWS Lambda _after_ initial deployment:
-    - DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT
-    - DJANGO_SECRET_KEY : Generate random 50 letter alphanumeric string
+* DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT
+* DJANGO_SECRET_KEY : Generate random 50 letter alphanumeric string
 
 ### Deployment with CircleCI
 CircleCI configuration YAML file is included. Setup CircleCI to track repository.
