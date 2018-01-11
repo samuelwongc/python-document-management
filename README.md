@@ -121,13 +121,17 @@ API hosted using AWS Lambda, DB hosted on AWS RDS, continuous deployment via Cir
     ]
 }
 ```
+## Deployment
+Setup up environmental variables on AWS Lambda _after_ initial deployment:
+    - DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT
+    - DJANGO_SECRET_KEY : Generate random 50 letter alphanumeric string
 
-## Deployment with CircleCI
+### Deployment with CircleCI
 CircleCI configuration YAML file is included. Setup CircleCI to track repository.
 Commits on branch `staging` will be deployed according to `demo` in `zappa_settings.json`,
 and commits on `master` will be deployed to `live`.
 
-## Manual deployment
+### Manual deployment
 Initial deployment:
 
 1. `zappa deploy <demo/live>`
