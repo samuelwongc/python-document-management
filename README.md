@@ -134,9 +134,67 @@ and commits on `master` will be deployed to `live`.
 ### Manual deployment
 Initial deployment:
 
-1. `zappa deploy <demo/live>`
+    zappa deploy <demo/live>
 
 Later deployments:
 
-1. `zappa update <demo/live>`
+    zappa update <demo/live>
 
+### Model migration
+Whenever the `models.py` file is updated, Django can generate the migrations using
+
+    python manage.py makemigrations
+    
+Then to propagate the migrations:
+
+    python manage.py migrate
+
+### Data migration
+
+Data migrations are easily done through Python scripts ran using Django's shell.
+Django's interactive shell can be run using `python manage.py shell`.
+
+1. Setting up a lender, permission groups and users
+```python
+from api.models import Lender
+from django.contrib.auth.models import User, Group, Permission
+# Lender
+l = Lender.objects.create(name='Test Lender')
+
+# Permissions
+read_permission = Permission.objects.get(codename='read_document')
+draft_permission = Permission.objects.get(codename='draft_document')
+publish_permission = Permission.objects.get(codename='publish_document')
+
+# Permission Groups
+r_group = Group.objects.create(name='Test Lender Readers')
+r_group.permissions.add(read_permission)
+r_group.save()
+
+rd_group = Group.objects.create(name='Test Lender Drafters')
+rd_group.permissions.add(read_permission, draft_permission)
+rd_group.save()
+
+rdp_group = Group.objects.create(name='Test Lender Publishers')
+rdp_group.permissions.add(read_permission, draft_permission, publish_permission)
+rdp_group.save()
+
+# Users
+u = User.objects.create(username='testuser1', password='testuser1')
+u.profile.lender = l
+u.groups.add(rdp_group)
+u.save()
+
+# Checking for permissions:
+u.has_perm('api.read_document') # <app label>.<permission codename>
+```
+
+2. Setting up lender document types:
+```python
+from api.models import Lender, LenderDocument
+l, created = Lender.objects.get_or_create(name='Test Lender')
+ld_type = LenderDocument.objects.create(name='Terms of Service', lender=l)
+```
+
+### API Documentation
+[Postman documentation](https://documenter.getpostman.com/view/3474948/pydocman/7Lt5eX5)

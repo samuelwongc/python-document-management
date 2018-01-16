@@ -83,9 +83,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pydocman.wsgi.application'
 
-S3_BUCKET = 'incendier-storage'
-
 try:
+    S3_BUCKET = os.environ['S3_BUCKET']
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     ENV = os.environ['ENV_NAME']
     DATABASES = {

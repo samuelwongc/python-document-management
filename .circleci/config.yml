@@ -26,6 +26,12 @@ jobs:
             cp pydocman/pydocman/local_settings.py.dist pydocman/pydocman/local_settings.py
             cd pydocman
             python manage.py test
+      - run:
+          name: Run Django migrations
+          command: |
+            . venv/bin/activate
+            cd pydocman
+            python manage.py migrate
       - deploy:
           name: Deploy to AWS Lambda
           command: |  
