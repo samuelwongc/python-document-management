@@ -95,6 +95,10 @@ try:
             'PASSWORD': os.environ['DB_PASSWORD'],
             'HOST': os.environ['DB_HOST'],
             'PORT': os.environ['DB_PORT'],
+        },
+        'test': {  # For CI
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'testdb.sqlite3'),
         }
     }
 except Exception as e: # Import local settings
