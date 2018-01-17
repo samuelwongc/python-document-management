@@ -16,6 +16,7 @@ class Lender(models.Model):
     lender_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     lender = models.ForeignKey(Lender, null=True, blank=True, related_name='users', on_delete=models.CASCADE)
@@ -33,11 +34,18 @@ def save_user_profile(sender, instance, **kwargs):
 def auto_delete_user(sender, instance, **kwargs):
     instance.user.delete()
 
+
 class LenderDocument(models.Model):
     lender_document_id = models.AutoField(primary_key=True)
     lender = models.ForeignKey(Lender, related_name='document_types', on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    active_document = models.ForeignKey('Document', null=True, blank=True, on_delete=models.SET_NULL)
+    active_document = models.ForeignKey('Document', default=None, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        permissions = (
+            ("create_lender_document", "Create lender document"),
+        )
+
 
 class Document(models.Model):
     document_id = models.AutoField(primary_key=True)
@@ -87,6 +95,11 @@ class Document(models.Model):
             Key=self.s3_bucket_key
         )['Body'].read().decode()
     
+    def revert(self, created_user):
+        if self.lender_document.active_document == self:
+            return # Do nothing if active document is being reverted
+        return Document.create(self.lender_document, created_user, self.get_content())
+
     def publish(self):
         if not self.lender_document.active_document:
             self.version_major = 1
@@ -108,7 +121,6 @@ class Document(models.Model):
         self.lender_document.active_document = self
         self.lender_document.version_number = new_version_major
         self.lender_document.save()
-
 
     class Meta:
         permissions = (

@@ -4,7 +4,8 @@ Prototype document management backend API using Python3, Django web framework an
 
 API hosted using AWS Lambda, DB hosted on AWS RDS, continuous deployment via CircleCI.
 
-## To run locally:
+
+## To start Django server locally:
 
 1. Copy local_settings.py.dist to local_settings.py
     > `cp pydocman/pydocman/local_settings.py.dist pydocman/pydocman/local_settings.py`
@@ -12,7 +13,9 @@ API hosted using AWS Lambda, DB hosted on AWS RDS, continuous deployment via Cir
 3. Setup Python venv and packages
     > `python -m venv venv`
     > `pip install -r requirements.txt`
-4. Start server:
+4. Run migrations
+    > `python manage.py migrate`
+5. Start server:
     > `python manage.py runserver 0.0.0.0:8080`
 
 ### Run tests locally:
@@ -165,6 +168,7 @@ l = Lender.objects.create(name='Test Lender')
 read_permission = Permission.objects.get(codename='read_document')
 draft_permission = Permission.objects.get(codename='draft_document')
 publish_permission = Permission.objects.get(codename='publish_document')
+create_document_type_permission = Permission.objects.get(codename='create_lender_document')
 
 # Permission Groups
 r_group = Group.objects.create(name='Test Lender Readers')
@@ -179,10 +183,14 @@ rdp_group = Group.objects.create(name='Test Lender Publishers')
 rdp_group.permissions.add(read_permission, draft_permission, publish_permission)
 rdp_group.save()
 
+ld_group = Group.objects.create(name='Test Lender Document Type Managers')
+ld_group.permissions.add(create_document_type_permission)
+ld_group.save()
+
 # Users
 u = User.objects.create_user(username='testuser1', password='testuser1')
 u.profile.lender = l
-u.groups.add(rdp_group)
+u.groups.add(rdp_group, ld_group)
 u.save()
 
 # Checking for permissions:
