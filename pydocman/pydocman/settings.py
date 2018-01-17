@@ -98,7 +98,7 @@ try:
         }
     }
 except Exception as e: # Import local settings
-    print('Importing local settings...', e)
+    print('Environmental variables not set. Attempting to use local settings...')
     from .local_settings import *
 
 # Password validation

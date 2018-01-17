@@ -16,7 +16,7 @@ API hosted using AWS Lambda, DB hosted on AWS RDS, continuous deployment via Cir
     > `python manage.py runserver 0.0.0.0:8080`
 
 ### Run tests locally:
-    > `python manage.py test`
+    > `python manage.py test api.tests`
 
 ## Setting up AWS credentials:
 
@@ -180,7 +180,7 @@ rdp_group.permissions.add(read_permission, draft_permission, publish_permission)
 rdp_group.save()
 
 # Users
-u = User.objects.create(username='testuser1', password='testuser1')
+u = User.objects.create_user(username='testuser1', password='testuser1')
 u.profile.lender = l
 u.groups.add(rdp_group)
 u.save()
