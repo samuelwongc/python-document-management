@@ -8,7 +8,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Document, LenderDocument
-from .permissions import DocumentModelPermission, DocumentModelPublishPermission, LenderDocumentModelPermission
+from .permissions import DocumentModelPermission, DocumentModelPublishPermission, DocumentModelRevertPermission, LenderDocumentModelPermission
 from .serializers import DocumentSerializer, LenderDocumentSerializer
 
 
@@ -64,6 +64,18 @@ class DocumentViewSet(mixins.CreateModelMixin,
         data['content'] = document.get_content()
         return JsonResponse(data, status=200, safe=False)
     
+    @detail_route(permission_classes=[DocumentModelRevertPermission], methods=['post'])
+    def revert(self, request, pk=None):
+        try:
+            document = self.get_queryset().get(document_id=pk)
+        except:
+            return JsonResponse({'error_msg': 'Invalid request.'}, status=400)
+        reverted_document = document.revert(request.user)
+        serializer = DocumentSerializer(reverted_document, many=False)
+        data = serializer.data
+        data['content'] = reverted_document.get_content()
+        return JsonResponse(data, status=200, safe=False)
+
     def get_queryset(self):
         if self.request.user.is_superuser:
             return Document.objects.all()

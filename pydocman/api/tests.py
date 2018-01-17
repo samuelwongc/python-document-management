@@ -47,12 +47,11 @@ class DocumentTests(APITestCase):
         response_json = json.loads(response.content.decode('utf-8'))
         self.assertEquals(document.get_content(), response_json['content'])
         
-
     def test_list_document(self):
         url = reverse('document-list')
         self.client.force_authenticate(user=self.users['u_rwx'])
         response = self.client.get(url)
-        documents = json.loads(response.content.decode('utf-8'))
+        documents = json.loads(response.content.decode('utf-8'))['results']
         self.assertEquals(len(documents), 1)
         self.assertEquals(documents[0]['version_minor'], 1)
         self.assertEquals(documents[0]['version_major'], 0)

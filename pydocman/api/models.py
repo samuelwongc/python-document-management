@@ -95,6 +95,11 @@ class Document(models.Model):
             Key=self.s3_bucket_key
         )['Body'].read().decode()
     
+    def revert(self, created_user):
+        if self.lender_document.active_document == self:
+            return # Do nothing if active document is being reverted
+        return Document.create(self.lender_document, created_user, self.get_content())
+
     def publish(self):
         if not self.lender_document.active_document:
             self.version_major = 1
