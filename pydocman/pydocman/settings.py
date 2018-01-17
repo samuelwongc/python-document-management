@@ -97,7 +97,8 @@ try:
             'PORT': os.environ['DB_PORT'],
         }
     }
-except: # Import local settings
+except Exception as e: # Import local settings
+    print('Importing local settings...', e)
     from .local_settings import *
 
 # Password validation
