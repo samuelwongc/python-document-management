@@ -8,7 +8,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Document, LenderDocument
-from .permissions import DocumentModelPermission, DocumentModelPublishPermission
+from .permissions import DocumentModelPermission, DocumentModelPublishPermission, LenderDocumentModelPermission
 from .serializers import DocumentSerializer, LenderDocumentSerializer
 
 
@@ -24,8 +24,12 @@ class DocumentViewSet(mixins.CreateModelMixin,
 
     def list(self, request):
         documents = self.get_queryset().all()
+        lender_document = self.request.query_params.get('type', None)
+        if lender_document:
+            documents = documents.filter(lender_document=lender_document)
+        documents = self.paginate_queryset(documents)
         serializer = DocumentSerializer(documents, many=True)
-        return JsonResponse(serializer.data, status=200, safe=False)
+        return self.get_paginated_response(serializer.data)
         
     def create(self, request):
         try:
@@ -70,6 +74,7 @@ class LenderDocumentViewSet(mixins.RetrieveModelMixin,
                             mixins.ListModelMixin,
                             viewsets.GenericViewSet):
     authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (LenderDocumentModelPermission,)
 
     def list(self, request):
         lender_documents = self.get_queryset().all()
@@ -77,8 +82,6 @@ class LenderDocumentViewSet(mixins.RetrieveModelMixin,
         return JsonResponse(serializer.data, status=200, safe=False)
 
     def create(self, request):
-        if not request.user.has_perm('api.create_lender_document'):
-            return JsonResponse({'error_msg': 'You do not have permissions to create a new lender document.'}, status=403)
         serializer = LenderDocumentSerializer(data=request.data, many=False)
         lender = request.user.profile.lender
         if serializer.is_valid():
