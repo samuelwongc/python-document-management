@@ -70,10 +70,21 @@ class LenderDocumentViewSet(mixins.RetrieveModelMixin,
                             mixins.ListModelMixin,
                             viewsets.GenericViewSet):
     authentication_classes = (JSONWebTokenAuthentication,)
+
     def list(self, request):
         lender_documents = self.get_queryset().all()
         serializer = LenderDocumentSerializer(lender_documents, many=True)
         return JsonResponse(serializer.data, status=200, safe=False)
+
+    def create(self, request):
+        if not request.user.has_perm('api.create_lender_document'):
+            return JsonResponse({'error_msg': 'You do not have permissions to create a new lender document.'}, status=403)
+        serializer = LenderDocumentSerializer(data=request.data, many=False)
+        lender = request.user.profile.lender
+        if serializer.is_valid():
+            serializer.save(lender=lender, active_document=None)
+            return JsonResponse(serializer.data, status=201, safe=False)
+        return JsonResponse(serializer.errors, status=400)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
