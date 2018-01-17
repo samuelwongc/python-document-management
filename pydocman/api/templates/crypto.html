@@ -1,75 +1,9 @@
 <html>
 
-<head>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <link rel="stylesheet" href="https://github.hubspot.com/odometer/themes/odometer-theme-plaza.css" />
-    <link rel="stylesheet" href="https://github.hubspot.com/odometer/themes/odometer-theme-default.css" />
-    <script src="https://github.hubspot.com/odometer/odometer.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        var rawData = [
-
-        ];
-        google.charts.load('current', { 'packages': ['corechart'] });
-        google.charts.setOnLoadCallback(drawChart);
-        var time = 0;
-        var current_value = -1;
-        function recalculate() {
-            var value = 0;
-            $.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/',
-                function (data) {
-                    value += parseFloat(data[0]['price_usd']) * 985;
-                    $.get('https://api.coinmarketcap.com/v1/ticker/iota/',
-                        function (data) {
-                            value += parseFloat(data[0]['price_usd']) * 622.223;
-                            $.get('https://api.coinmarketcap.com/v1/ticker/icon/',
-                                function (data) {
-                                    value += parseFloat(data[0]['price_usd']) * 260.47;
-                                    var rounded = Math.round(value * 100) / 100;
-                                    $('#portfolio').html(rounded);
-                                    var date = new Date();
-                                    if (current_value == -1) {
-                                        current_value = rounded - 10;
-                                    }
-                                    rawData.push([date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(), current_value, current_value, rounded, rounded]);
-                                    current_value = rounded;
-                                    $('#updated_time').html("0");
-                                    time = 0;
-                                    drawChart();
-                                }
-                            );
-                        }
-                    );
-                }
-            );
-        }
-        var el = document.querySelector('#portfolio');
-        setInterval(function () { time += 1; $('#updated_time').html(time); }, 1000);
-        recalculate();
-        setInterval(recalculate, 60000);
-        function drawChart() {
-            if (rawData.length == 0) { return; }
-            var data = google.visualization.arrayToDataTable(rawData, true);
-
-            var options = {
-                legend: 'none',
-                bar: { groupWidth: '100%' }, // Remove space between bars.
-                candlestick: {
-                    fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
-                    risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
-                }
-            };
-
-            var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
-            chart.draw(data, options);
-        }
-    </script>
-</head>
-
 <body style="align-content: center;text-align:center;">
     <h2>TO THE MOON</h2>
-    <div id="portfolio" class="odometer" style="font-size:17vw;">0</div>
-    <div id="chart_div" style="width: 100vw; height: 50vh;"></div>
+    Django server up and running! (or part of it anyway)
+    <!-- raiblocks is love, raiblocks is life -->
 </body>
 
 </html>

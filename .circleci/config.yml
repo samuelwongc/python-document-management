@@ -25,7 +25,7 @@ jobs:
             . venv/bin/activate
             cp pydocman/pydocman/local_settings.py.dist pydocman/pydocman/local_settings.py
             cd pydocman
-            python manage.py test
+            python manage.py test api.tests
       - deploy:
           name: Deploy to AWS Lambda
           command: |  
