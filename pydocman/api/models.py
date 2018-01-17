@@ -2,7 +2,7 @@ import boto3
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 
@@ -28,6 +28,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+@receiver(post_delete, sender=Profile)
+def auto_delete_user(sender, instance, **kwargs):
+    instance.user.delete()
 
 class LenderDocument(models.Model):
     lender_document_id = models.AutoField(primary_key=True)

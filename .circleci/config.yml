@@ -36,9 +36,12 @@ jobs:
             aws configure set default.output json
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 cd pydocman
+                python manage.py migrate
                 zappa update live
             fi
             if [ "${CIRCLE_BRANCH}" == "staging" ]; then
                 cd pydocman
+                export DB_NAME=$DB_NAME_DEMO
+                python manage.py migrate
                 zappa update demo
             fi

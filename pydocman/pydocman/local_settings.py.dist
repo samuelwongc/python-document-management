@@ -10,6 +10,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ENV = 'local'
 
+S3_BUCKET = 'incendier-storage'
+
 # Local SQLite
 DATABASES = {
     'default': {
