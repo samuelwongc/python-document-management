@@ -99,4 +99,4 @@ class DocumentTests(APITestCase):
         documents = lender_document.documents.order_by('-created_at')
         self.assertEquals(previous_active_document.version_major + 1, lender_document.active_document.version_major)
         self.assertEquals(0, lender_document.active_document.version_minor)
-        self.assertEquals(published_document.document_id, lender_document.active_document.document_id)
+        self.assertEquals(published_document.s3_bucket_key, lender_document.active_document.s3_bucket_key)

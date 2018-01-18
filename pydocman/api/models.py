@@ -110,17 +110,23 @@ class Document(models.Model):
             lender_document.active_document = self
             lender_document.version_number = 1
             lender_document.save()
-            return
+            return self
         if self.lender_document.active_document == self:
-            return # Do nothing if active document being republished
+            return self # Do nothing if active document being republished
+
         new_version_major = self.lender_document.active_document.version_major + 1
-        self.version_major = new_version_major
-        self.version_minor = 0
-        self.created_at = timezone.now()
-        self.save()
-        self.lender_document.active_document = self
+        document = Document.objects.create(
+            s3_bucket=settings.S3_BUCKET,
+            s3_bucket_key=self.s3_bucket_key,
+            version_major=new_version_major,
+            version_minor=0,
+            lender_document=self.lender_document,
+            created_by=self.created_by # Change to publish?
+        )
+        self.lender_document.active_document = document
         self.lender_document.version_number = new_version_major
         self.lender_document.save()
+        return document
 
     class Meta:
         permissions = (
