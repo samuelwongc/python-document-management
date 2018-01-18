@@ -58,7 +58,7 @@ class DocumentViewSet(mixins.CreateModelMixin,
             document = self.get_queryset().get(document_id=pk)
         except:
             return JsonResponse({'error_msg': 'Invalid request.'}, status=400)
-        document.publish()
+        document = document.publish()
         serializer = DocumentSerializer(document, many=False)
         data = serializer.data
         data['content'] = document.get_content()
