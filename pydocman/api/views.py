@@ -27,6 +27,10 @@ class DocumentViewSet(mixins.CreateModelMixin,
         lender_document = self.request.query_params.get('type', None)
         if lender_document:
             documents = documents.filter(lender_document=lender_document)
+        state = self.request.query_params.get('state', None)
+        if state == 'published':
+            documents = documents.filter(version_minor=0)
+
         documents = self.paginate_queryset(documents)
         serializer = DocumentSerializer(documents, many=True)
         return self.get_paginated_response(serializer.data)
