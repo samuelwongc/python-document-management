@@ -1,16 +1,21 @@
-import boto3
 from datetime import datetime
 
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.db import models
-
-from django.conf import settings
 from django.utils import timezone
 
-s3_client = boto3.client('s3')
+from api.documentrepository.localdocumentrepository import LocalDocumentRepository
+from api.documentrepository.s3documentrepository import S3DocumentRepository
 
+if settings.ENV == 'local':
+    document_directory = settings.BASE_DIR
+    document_repository = LocalDocumentRepository(document_directory)
+else:
+    document_directory = settings.S3_BUCKET
+    document_repository = S3DocumentRepository(document_directory)
 
 class Lender(models.Model):
     lender_id = models.AutoField(primary_key=True)
@@ -74,11 +79,7 @@ class Document(models.Model):
             version_major,
             version_minor
         )
-        s3_client.put_object(
-            Bucket=settings.S3_BUCKET,
-            Key=s3_bucket_key,
-            Body=content.encode()
-        )
+        document_repository.put(s3_bucket_key, content)
 
         return cls.objects.create(
             s3_bucket=settings.S3_BUCKET,
@@ -90,10 +91,7 @@ class Document(models.Model):
         )
 
     def get_content(self):
-        return s3_client.get_object(
-            Bucket=self.s3_bucket,
-            Key=self.s3_bucket_key
-        )['Body'].read().decode()
+        return document_repository.get(self.s3_bucket_key)
     
     def revert(self, created_user):
         if self.lender_document.active_document == self:
